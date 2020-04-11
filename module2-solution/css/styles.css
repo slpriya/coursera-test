@@ -1,0 +1,75 @@
+
+/********** Base styles **********/
+* {
+   box-sizing: border-box;
+   font-family: Helvetica;
+   color: black;
+   }
+
+h1 {
+    text-align: center; 
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-size: 40px;
+   }
+h3{       
+      position: absolute; 
+      right: 0;
+      border: 1px solid black;
+      width: 90px;
+      height: 25px;
+      margin:0px;
+      text-align: center;
+      font-size: 18px;
+   }
+section {
+    border: 1px solid black;
+    margin: 15px;
+    background-color: gray;
+    position: relative;
+     }
+
+p {
+ 
+ padding:15px;
+}
+
+.idly{
+   background-color: pink;  
+}
+.vadai{
+  background-color: orange;
+}
+.sambhar{
+  background-color: gold;
+}
+/* Simple Responsive Framework. */
+.row {
+  width: 100%;
+}
+/********* Mobile view **********/
+@media (max-width: 767px){
+.col-xs-12  {
+    float: left  
+     width: 100%;
+  }
+}
+
+/********** Tablet view **********/
+@media (min-width: 768px) and (max-width: 991px) {
+.col-sm-6 , .col-sm-12{
+    float: left;  
+     width: 50%;
+  }
+  .col-sm-12 {
+     width: 100%;
+  }
+}
+
+/*** desktop version of the site when the width of the browser window is 992px and above ***/
+@media (min-width: 992px) {
+  .col-md-4 {
+    float: left;
+    width: 33.33%;
+  }
+}
