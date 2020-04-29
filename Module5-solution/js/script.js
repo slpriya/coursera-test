@@ -42,20 +42,18 @@ var insertProperty = function (string, propName, propValue) {
 	string = string
 	  .replace(new RegExp(propToReplace, "g"), propValue);
 	return string;
-  }
+  };
   
   // Remove the class 'active' from home and switch to Menu button
 var switchMenuToActive = function () {
   // Remove 'active' from home button
   var classes = document.querySelector("#navHomeButton").className;
-  console.log('classes:', classes)
-  
   classes = classes.replace(new RegExp("active", "g"), "");
   document.querySelector("#navHomeButton").className = classes;
 
   // Add 'active' to menu button if not already there
   classes = document.querySelector("#navMenuButton").className;
-  if (classes.indexOf("active") == -1) {
+  if (classes.indexOf("active") === -1) {
     classes += " active";
     document.querySelector("#navMenuButton").className = classes;
   }
@@ -67,14 +65,30 @@ var switchMenuToActive = function () {
 		// On first load, show home view
 		showLoading("#main-content");
 		$ajaxUtils.sendGetRequest(
-			homeHtml,
-			function (responseText) {
-				document.querySelector("#main-content")
-					.innerHTML = responseText;
-			},
-			false);
-	});
-	
+			allCategoriesUrl,
+			buildAndShowHomeHTML);
+  });
+  function buildAndShowHomeHTML (categories) {   // Load home snippet page
+    $ajaxUtils.sendGetRequest(
+      homeHtml,
+      function (homeHtml) {  
+           var chosenCategoryShortName = chooseRandomCategory (categories).short_name;
+          console.log( chosenCategoryShortName);
+          var finalHtml= insertProperty(homeHtml,'randomCategoryShortName',chosenCategoryShortName);
+          console.log('finalHtml:', finalHtml)          
+          insertHtml("#main-content", finalHtml); 
+      },false); // False here because we are getting just regular HTML from the server, so no need to process JSON.
+  }
+  
+  // Given array of category objects, returns a random category object.
+function chooseRandomCategory (categories) {
+  // Choose a random index into the array (from 0 inclusively until array length (exclusively))
+  var randomArrayIndex = Math.floor(Math.random() * categories.length);
+
+  // return category object with that randomArrayIndex
+  return categories[randomArrayIndex];
+}
+
 // Load the menu categories view
 dc.loadMenuCategories = function () {
 	showLoading("#main-content");
@@ -105,7 +119,9 @@ dc.loadMenuItems = function (categoryShort) {
 		$ajaxUtils.sendGetRequest(
 		  categoryHtml,
 		  function (categoryHtml) {
+         // Switch CSS class active to menu button
         switchMenuToActive();
+
 		      var categoriesViewHtml =
 			  buildCategoriesViewHtml(categories,
 									  categoriesTitleHtml,
@@ -147,6 +163,7 @@ dc.loadMenuItems = function (categoryShort) {
   }
   
   
+
 // Builds HTML for the single category page based on the data
 // from the server
 function buildAndShowMenuItemsHTML (categoryMenuItems) {
@@ -157,8 +174,10 @@ function buildAndShowMenuItemsHTML (categoryMenuItems) {
       // Retrieve single menu item snippet
       $ajaxUtils.sendGetRequest(
         menuItemHtml,
-        function (menuItemHtml) {
+        function (menuItemHtml) {  
+          // Switch CSS class active to menu button
           switchMenuToActive();
+
           var menuItemsViewHtml =
             buildMenuItemsViewHtml(categoryMenuItems,
                                    menuItemsTitleHtml,
@@ -227,7 +246,7 @@ function buildMenuItemsViewHtml(categoryMenuItems,
                      menuItems[i].description);
 
     // Add clearfix after every second menu item
-    if (i % 2 != 0) {
+    if (i % 2 !== 0) {
       html +=
         "<div class='clearfix visible-lg-block visible-md-block'></div>";
     }
@@ -238,6 +257,8 @@ function buildMenuItemsViewHtml(categoryMenuItems,
   finalHtml += "</section>";
   return finalHtml;
 }
+
+
 // Appends price with '$' if price exists
 function insertItemPrice(html,
                          pricePropName,
@@ -246,10 +267,12 @@ function insertItemPrice(html,
   if (!priceValue) {
     return insertProperty(html, pricePropName, "");
   }
+
   priceValue = "$" + priceValue.toFixed(2);
   html = insertProperty(html, pricePropName, priceValue);
   return html;
 }
+
 
 // Appends portion name in parens if it exists
 function insertItemPortionName(html,
@@ -264,5 +287,8 @@ function insertItemPortionName(html,
   html = insertProperty(html, portionPropName, portionValue);
   return html;
 }
-	global.$dc = dc;
+
+
+  global.$dc = dc;
+  
 })(window);
